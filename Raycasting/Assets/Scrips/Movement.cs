@@ -11,7 +11,7 @@ public class Movement : MonoBehaviour
     private bool up;
     private bool down;
 
-
+    
     // Update is called once per frame
 
     private void Start()
