@@ -5,25 +5,26 @@ using UnityEngine;
 
 public class CameraRaycast : MonoBehaviour
 {
-    [SerializeField] private GameObject camera;
-    [SerializeField] private GameObject target;
-    [SerializeField] private LayerMask myLayerMask;
-
-    void Update()
+    [SerializeField] private Transform playerCam;
+    public LayerMask terrainLayer;
+    public Material newMat;
+    public Material oldMat;
+    private List<RaycastHit> roofHits = new List<RaycastHit>();
+    public void Update()
     {
-        RaycastHit hit;
-
-        if (Physics.Raycast(camera.transform.position,(target.transform.position - camera.transform.position).normalized, out hit, mathf.infinity, myLayerMask))
+        if (Physics.Linecast(this.transform.position, playerCam.position, out RaycastHit hitInfo, terrainLayer))
         {
-            if (hit.collider.gameObject.tag == "player")
-            {
-                target.SetActive(false);
-            }
-            else
-            {
-                target.SetActive(true);
+            hitInfo.collider.gameObject.GetComponent<MeshRenderer>().material = newMat;
+            roofHits.Add(hitInfo);
+        }
 
+        if (roofHits.Count > 0 && !Physics.Linecast(this.transform.position, playerCam.position, terrainLayer))
+        {
+            for (int i = 0; i < roofHits.Count; i++)
+            {
+                roofHits[i].collider.gameObject.GetComponent<MeshRenderer>().material = oldMat;
             }
+            roofHits.Clear();
         }
     }
 }
